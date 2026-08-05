@@ -27,13 +27,11 @@ A real-time face detection and recognition system built using **YOLOv8**, **Open
 
 # 📂 Dataset
 
-**Dataset:** *Face Detection (Roboflow Universe)*
+**Dataset:** [Face Detection Dataset (Roboflow Universe)](https://universe.roboflow.com/mohamed-traore-2ekkp/face-detection-mik1i)
 
-The model was trained on a publicly available face detection dataset from **Roboflow Universe**, containing annotated facial bounding boxes for object detection.
+The YOLOv8s model was trained using a publicly available face detection dataset from **Roboflow Universe**, which contains annotated facial bounding boxes for object detection.
 
-- **Dataset Link:** https://universe.roboflow.com/mohamed-traore-2ekkp/face-detection-mik1i
-- **License:** CC BY 4.0
-
+> **Note:** This dataset is used **only for face detection training**. Face recognition is performed separately by comparing detected faces against images stored in the `known_faces` directory.
 
 ### Image Size
 
