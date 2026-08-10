@@ -91,8 +91,8 @@ Display Bounding Box + Name
 | Model | YOLOv8s |
 | Image Size | 640 |
 | Hardware | Kaggle NVIDIA Tesla T4 GPU |
-| Epochs | *Update* |
-| Batch Size | *Update* |
+| Epochs | 100 |
+| Batch Size | 32 |
 
 ---
 
