@@ -10,9 +10,9 @@ from datetime import datetime
 # ========================= CONFIG =========================
 MODEL_PATH = "best.pt"
 KNOWN_FACES_DIR = Path("known_faces")
-YOLO_IMGSZ = 320               # 320 = fast, 480 = balanced, 640 = accurate
+YOLO_IMGSZ = 320
 CONFIDENCE = 0.5
-RECOGNITION_INTERVAL = 10      # Run expensive face_recognition every N frames
+RECOGNITION_INTERVAL = 10
 WEBCAM_WIDTH = 640
 WEBCAM_HEIGHT = 480
 # ==========================================================
@@ -36,15 +36,14 @@ class FaceRecognitionApp:
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, WEBCAM_WIDTH)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, WEBCAM_HEIGHT)
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)   # CRITICAL: stops old frames from piling up
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
-        # Thread-safe shared state
         self.frame_lock = threading.Lock()
         self.result_lock = threading.Lock()
 
-        self.latest_frame = None          # Raw BGR from camera
-        self.latest_annotated = None      # Frame with boxes drawn
-        self.tracked_identities = []      # For proximity tracking between recognition frames
+        self.latest_frame = None
+        self.latest_annotated = None
+        self.tracked_identities = []
         self.running = True
 
         self.fps_display = 0
@@ -74,7 +73,6 @@ class FaceRecognitionApp:
     def _detect(self, image_bgr: np.ndarray, run_recognition: bool, prev_identities: list):
         h, w, _ = image_bgr.shape
 
-        # YOLO inference (small imgsz = much faster on CPU)
         results = self.model.predict(
             source=image_bgr,
             conf=CONFIDENCE,
@@ -124,12 +122,11 @@ class FaceRecognitionApp:
                     if d < min_dist:
                         min_dist = d
                         best_name = prev["name"]
-                if min_dist < (w * 0.25):          # Only reuse if face hasn't jumped too far
+                if min_dist < (w * 0.25):
                     name = best_name
 
             current_identities.append({"center": (cx, cy), "name": name})
 
-            # Draw box + label
             label = f"{name} ({score:.2f})"
             cv2.rectangle(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
             (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
@@ -156,7 +153,6 @@ class FaceRecognitionApp:
     def _infer(self):
         last_time = time.time()
         while self.running:
-            # Pull latest frame (drop old ones automatically)
             frame = None
             with self.frame_lock:
                 if self.latest_frame is not None:
@@ -198,7 +194,6 @@ class FaceRecognitionApp:
         disp_frames = 0
 
         while True:
-            # Get latest processed frame (never wait for inference)
             display = None
             with self.result_lock:
                 if self.latest_annotated is not None:
@@ -212,7 +207,6 @@ class FaceRecognitionApp:
                     disp_frames = 0
                     disp_time = time.time()
 
-                # HUD overlay
                 cv2.putText(display, f"Display: {self.fps_display} FPS", (10, 30),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
                 cv2.putText(display, f"Inference: {self.fps_inference:.1f} FPS", (10, 55),
